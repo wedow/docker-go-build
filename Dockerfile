@@ -5,18 +5,14 @@ ENV CGO_ENABLED=0 GOOS=linux
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY go.mod go.sum dummy/main.go ./
 
-RUN time go mod download
+# compile imports from dummy main
+RUN time go build
 
-# this fails
-RUN go build ./...
-# => go: warning: "./..." matched no packages
-
+# remove the dummy and add real project code
+RUN rm main.go
 COPY . .
-
-# this now works but isn't needed
-# RUN time go build ./...
 
 # compile app along with any unbuilt deps
 RUN time go build
